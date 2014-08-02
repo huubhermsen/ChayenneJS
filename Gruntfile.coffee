@@ -1,10 +1,5 @@
 "use strict"
 
-# Source, test and build folders
-source_folder = 'source'
-demo_folder = 'demo'
-export_templates_folder = 'templates'
-
 # Grunt setup
 module.exports = (grunt) ->
 
@@ -22,33 +17,21 @@ module.exports = (grunt) ->
 				livereload: 8000
 				spawn: false
 			}
-			sourceSass: {
-				files: [ source_folder + '/sass/**/*.{scss,sass}' ]
-				tasks: [ 'compass:source', 'cssmin' ]
-			}
-			demoSass: {
-				files: [ demo_folder + '/sass/**/*.{scss,sass}' ]
-				tasks: [ 'compass:demo' ]
-			}
 			coffee: {
-				files: [ source_folder + '/coffeescript/**/*.coffee' ]
-				tasks: [ 'coffee:build', 'uglify' ]
+				files: [ 'source/**/*.coffee' ]
+				tasks: [ 'coffee', 'uglify' ]
+			}
+			sass: {
+				files: [ 'source/demo_files/sass/**/*.{scss,sass}' ]
+				tasks: [ 'compass:demo', 'cssmin' ]
 			}
 			jade: {
-				files: [ source_folder + '/jade/**/*.jade' ]
+				files: [ 'source/demo_files/jade/**/*.jade' ]
 				tasks: [ 'jade' ]
 			}
-			jasmine: {
-				files: [ source_folder + '/jasmine/*.coffee' ]
-				tasks: [ 'coffee:jasmine', 'jasmine:test:build' ]
-			}
 			javascript: {
-				files: [ source_folder + '/javascript/**/*.js' ]
-				tasks: [ 'copy:javascript', 'uglify' ]
-			}
-			images: {
-				files: [ source_folder + '/images/**/*.{png,jpg,gif,svg}' ]
-				tasks: [ 'copy:images', 'imagemin' ]
+				files: [ 'source/demo_files/js/**/*.js' ]
+				tasks: [ 'copy' ]
 			}
 		}
 
@@ -57,7 +40,7 @@ module.exports = (grunt) ->
 			target: {
 				options: {
 					port: 9000
-					base: test_folder
+					base: 'demo'
 				}
 			}
 		}
@@ -67,28 +50,19 @@ module.exports = (grunt) ->
 			options: {
 				bare: true
 			}
-			build: {
-				expand: true
-				cwd: source_folder + '/coffeescript'
-				src: [ '**/*.coffee' ]
-				dest: test_folder + '/asset/js'
-				ext: '.js'
-			}
-			jasmine: {
-				expand: true
-				cwd: source_folder + '/jasmine'
-				src: [ '*.coffee' ]
-				dest: test_folder + '/tests'
-				ext: '.spec.js'
+			compile: {
+				files: {
+					'chayenne.js': [ 'source/chayenne.coffee' ]
+				}
 			}
 		}
 
 		# Sass configuration using compass
 		compass: {
-			source: {
+			demo: {
 				options: {
-					sassDir: source_folder + '/sass'
-					cssDir: export_templates_folder
+					sassDir: 'source/demo_files/sass'
+					cssDir: 'demo/asset/css'
 					relativeAssets: true
 				}
 			}
@@ -106,25 +80,9 @@ module.exports = (grunt) ->
 				}
 				files: [{
 					expand: true
-					cwd: source_folder + '/jade'
+					cwd: 'source/demo_files/jade'
 					src: [ '**/*.jade', '!layout/**/*.jade' ]
-					dest: test_folder
-					ext: '.html'
-				}]
-			}
-			template: {
-				options: {
-					data: {
-						debug: false
-						build: true
-					}
-					pretty: true
-				}
-				files: [{
-					expand: true
-					cwd: source_folder + '/jade'
-					src: [ '**/*.jade', '!layout/**/*.jade' ]
-					dest: build_folder
+					dest: 'demo'
 					ext: '.html'
 				}]
 			}
@@ -135,55 +93,16 @@ module.exports = (grunt) ->
 			javascript: {
 				files: [{
 					expand: true
-					cwd: source_folder + '/javascript'
-					src: [ '**', '!lib/gsap/**' ]
-					dest: test_folder + '/asset/js'
-				}]
-			}
-			images: {
-				files: [{
-					expand: true
-					cwd: source_folder + '/images'
-					src: [ '**', '!icons/**' ]
-					dest: test_folder + '/asset/image'
-				}]
-			}
-			modernizr: {
-				files: [{
-					src: source_folder + '/javascript/lib/modernizr.min.js'
-					dest: build_folder + '/asset/js/modernizr.min.js'
+					cwd: 'source/demo_files/js'
+					src: [ '**' ]
+					dest: 'demo/asset/js'
 				}]
 			}
 		}
 
-		# Configure jasmine
-		jasmine: {
-			test: {
-				src: test_folder + '/asset/js/**/*.js'
-				options: {
-					specs: test_folder + '/tests/*.spec.js'
-				}
-			}
-		}
-
-		# Clean configurations
+		# Clean demo folder on init
 		clean: {
-			icons: [ test_folder + '/asset/image/icons', test_folder + '/asset/css' ]
-			init: [ '_SpecRunner.html', test_folder, build_folder ]
-		}
-
-		# Minify css
-		cssmin: {
-			options: {
-				keepSpecialComments: 0
-			}
-			minify: {
-				expand: true
-				cwd: test_folder + '/asset/css/'
-				src: [ '*.css' ]
-				dest: build_folder + '/asset/css/'
-				ext: '.css'
-			}
+			init: [ 'demo' ]
 		}
 
 		# Minify javascript
@@ -198,28 +117,11 @@ module.exports = (grunt) ->
 			}
 			javascript: {
 				files: {
-					'build/asset/js/all.js': [
-						'!test/asset/js/lib/modernizr.min.js'
-						'test/asset/js/lib/**/*.js'
-						'test/asset/js/plugins/**/*.js'
-						'test/asset/js/default/**/*.js'
-					]
+					'chayenne.min.js': [ 'chayenne.js' ]
 				}
-			}
-		}
-
-		#  Optimize images
-		imagemin: {
-			dynamic: {
-				files: [{
-					expand: true
-					cwd: test_folder + '/asset/image/'
-					src: [ '**/*.{png,jpg,gif,svg}' ]
-					dest: build_folder + '/asset/image/'
-				}]
 			}
 		}
 	}
 
-	grunt.registerTask 'init', [ 'clean:init', 'jade', 'compass', 'coffee', 'copy', 'imagemin', 'uglify', 'cssmin', 'jasmine:test:build' ]
+	grunt.registerTask 'init', [ 'clean:init', 'jade', 'compass', 'coffee', 'copy', 'uglify' ]
 	grunt.registerTask 'default', [ 'init', 'connect', 'watch' ]
