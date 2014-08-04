@@ -29,10 +29,6 @@ module.exports = (grunt) ->
 				files: [ 'source/demo_files/jade/**/*.jade' ]
 				tasks: [ 'jade' ]
 			}
-			javascript: {
-				files: [ 'source/demo_files/js/**/*.js' ]
-				tasks: [ 'copy' ]
-			}
 		}
 
 		# Connect live server for testing
@@ -53,6 +49,8 @@ module.exports = (grunt) ->
 			compile: {
 				files: {
 					'chayenne.js': [ 'source/chayenne.coffee' ]
+					'demo/asset/js/chayenne.js': [ 'source/chayenne.coffee' ]
+					'demo/asset/js/demo.js': [ 'source/demo_files/coffee/demo.coffee' ]
 				}
 			}
 		}
@@ -88,18 +86,6 @@ module.exports = (grunt) ->
 			}
 		}
 
-		# Copy static files
-		copy: {
-			javascript: {
-				files: [{
-					expand: true
-					cwd: 'source/demo_files/js'
-					src: [ '**' ]
-					dest: 'demo/asset/js'
-				}]
-			}
-		}
-
 		# Clean demo folder on init
 		clean: {
 			init: [ 'demo' ]
@@ -123,5 +109,5 @@ module.exports = (grunt) ->
 		}
 	}
 
-	grunt.registerTask 'init', [ 'clean:init', 'jade', 'compass', 'coffee', 'copy', 'uglify' ]
+	grunt.registerTask 'init', [ 'clean:init', 'jade', 'compass', 'coffee', 'uglify' ]
 	grunt.registerTask 'default', [ 'init', 'connect', 'watch' ]

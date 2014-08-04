@@ -1,0 +1,13 @@
+/**
+ * A better box-sizing setting
+ */
+html {
+	@include box-sizing(border-box);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+*, *:before, *:after {
+	@include box-sizing(inherit);
+	-webkit-font-smoothing: inherit;
+	-moz-osx-font-smoothing: inherit;
+}

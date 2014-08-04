@@ -1,0 +1,19 @@
+block vars
+	- var title = "ChayenneJS demo"
+
+extends layout/layout
+append content
+
+	h1 ChayenneJS demo form
+
+	form#chayenne-demo-form
+		.control-group
+			label( for = "text-field" ) Text field
+			input#text-field( type = "text", name = "text-field", placeholder = "Text field" )
+		.control-group
+			label( for = "password-field" ) Password field
+			input#password-field( type = "password", name = "password-field", placeholder = "Password field" )
+		.control-group
+			label( for = "email-field" ) E-mail field
+			input#email-field( type = "email", name = "email-field", placeholder = "E-mail field" )
+		
